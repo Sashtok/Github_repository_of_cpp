@@ -10,25 +10,98 @@ namespace Sashtok
 	{
 	public:
 		typedef T* iterator;
-		begin();
-		end();
-		begin();
-		end();
+		iterator begin()
+		{
+			return _start;
+		}
+		iterator end()
+		{
+			return _finish;
+		}
+		typedef const T* const_iterator;
+		const_iterator begin() const
+		{
+			return _start;
+		}
+		const_iterator end() const
+		{
+			return _finish;
+		}
 
-		reserve();
+		void reserve(size_t n)
+		{
+			if (n > capacity())
+			{
+				size_t old_size = size();
+				iterator temp = new T[n];
+				memcpy(temp, _start, old_size * sizeof(T));
+				delete[] _start;
+				_start = temp;
+				_finish = _start + old_size;
+				_end_of_storage = _start + n;
+			}
+		}
 		
-		size();
-		capacity();
+		size_t size() const
+		{
+			return _finish - _start;
+		}
+		size_t capacity() const
+		{
+			return _end_of_storage - _start;
+		}
 		
-		push_back();
+		void push_back(const T& x)
+		{
+			if (_finish == _end_of_storage)
+			{
+				reserve(capacity() == 0 ? 4 : 2 * capacity());
+			}
+			*_finish = x;
+			++_finish;
+		}
 		
-		operator[]();
-		operator[]();
+		T& operator[](size_t pos)
+		{
+			assert(pos >= 0 && pos < size());
+			return _start[pos];
+		}
+		const T& operator[](size_t pos) const
+		{
+			assert(pos >= 0 && pos < size());
+			return _start[pos];
+		}
 		
-		empty();
-		pop_back();
+		bool empty() const
+		{
+			return _start == _finish;
+		}
+		void pop_back()
+		{
+			if (!empty())
+			{
+				--_finish;
+			}
+		}
 
-		insert();
+		iterator insert(iterator pos, const T& x)
+		{
+			if (_finish == _end_of_storage)
+			{
+				size_t len = pos - _start;
+				reserve(capacity() == 0 ? 4 : 2 * capacity());
+				pos = _start + len;
+			}
+			iterator end = _finish;
+			while (end != pos)
+			{
+				*end = *(end - 1);
+				--end;
+			}
+			*pos = x;
+			++_finish;
+			return pos;
+		}
 		//void insert(iterator pos, const T& x)
 		//{
 		//	// 第一种迭代器失效：类似野指针
@@ -48,14 +121,30 @@ namespace Sashtok
 		//	++_finish;
 		//}
 
-		erase();
+		//erase();
 	private:
-		iterator _start;
-		iterator _finish;
-		iterator _end_of_storage;
+		iterator _start = nullptr;
+		iterator _finish = nullptr;
+		iterator _end_of_storage = nullptr;
 	};
 	
-	print_vector();
+	template<class T>
+	void print_vector(const vector<T> v)
+	{
+		typename vector<T>::const_iterator it = v.begin();
+		while (it != v.end())
+		{
+			std::cout << *it << ' ';
+			++it;
+		}
+		std::cout << std::endl;
+
+		for (auto& x : v)
+		{
+			std::cout << x << ' ';
+		}
+		std::cout << std::endl;
+	}
 
 	//void print_vector(const vector<int>& v)
 	//{
@@ -112,17 +201,38 @@ namespace Sashtok
 
 	void test1()
 	{
-
-	}
-
-	void test2()
-	{
-
 		vector<int> v;
 		v.push_back(1);
 		v.push_back(2);
 		v.push_back(3);
 		v.push_back(4);
+		v.push_back(5);
+		for (int i = 0; i < v.size(); ++i)
+		{
+			std::cout << v[i] << ' ';
+		}
+		std::cout << std::endl;
+		print_vector(v);
+		v.pop_back();
+		v.pop_back();
+		v.pop_back();
+		v.pop_back();
+		v.pop_back();
+		print_vector(v);
+	}
+
+	void test2()
+	{
+		vector<int> v;
+		v.push_back(1);
+		v.push_back(2);
+		v.push_back(3);
+		v.push_back(4);
+		v.push_back(5);
+		print_vector(v);
+		/*v.insert(v.begin() + 2, 40);
+		print_vector(v);*/
+
 		size_t x = 0;
 		std::cin >> x;
 		auto p = std::find(v.begin(), v.end(), x);
@@ -143,11 +253,11 @@ namespace Sashtok
 			// 那么，改成void insert(const iterator& pos, const T& x)可以吗？
 			// 不行，改成这样，还怎么修正pos呢
 			// 总之，insert后，p就失效了，不要再直接访问p了
+			// 在官方的STL中，vector的insert的解决方案是，返回新插入的值的迭代器
+			// iterator insert(iterator & pos, const T & x)
+			// 这样把p更新后，就可以访问了
+			*(p + 1) *= 10;
 		}
-		// 在STL的vector的insert的解决方案是，返回新插入的值的迭代器
-		// iterator insert(iterator & pos, const T & x)
-		// 这样把p更新后，就可以访问了
-		//p = v.insert(p, 40);
-		//*(p + 1) *= 10;
+		print_vector(v); 
 	}
 }
