@@ -1,6 +1,7 @@
 #pragma once
 #include<iostream>
 #include<cassert>
+#include<vector>
 
 // 模板不能分离到两个文件
 namespace Sashtok
@@ -86,6 +87,7 @@ namespace Sashtok
 
 		iterator insert(iterator pos, const T& x)
 		{
+			assert(pos >= _start && pos <= _finish)
 			if (_finish == _end_of_storage)
 			{
 				// 修正pos
@@ -122,7 +124,7 @@ namespace Sashtok
 		//	++_finish;
 		//}
 
-		//erase();
+		erase();
 	private:
 		iterator _start = nullptr;
 		iterator _finish = nullptr;
@@ -132,7 +134,7 @@ namespace Sashtok
 	template<class T>
 	void print_vector(const vector<T> v)
 	{
-		typename vector<T>::const_iterator it = v.begin();
+		auto it = v.begin();
 		while (it != v.end())
 		{
 			std::cout << *it << ' ';
@@ -200,6 +202,24 @@ namespace Sashtok
 	//	std::cout << std::endl;
 	//}
 
+	template<class T>
+	void print_Container(const T& v)
+	{
+		auto it = v.begin();
+		while (it != v.end())
+		{
+			std::cout << *it << ' ';
+			++it;
+		}
+		std::cout << std::endl;
+
+		for (auto& x : v)
+		{
+			std::cout << x << ' ';
+		}
+		std::cout << std::endl;
+	}
+
 	void test1()
 	{
 		vector<int> v;
@@ -261,5 +281,24 @@ namespace Sashtok
 			*(p + 1) *= 10;
 		}
 		print_vector(v); 
+
+		// 如果是用vs下的STL的vector，会强制检查
+		std::vector<int> v1;
+		v1.push_back(1);
+		v1.push_back(2);
+		v1.push_back(3);
+		v1.push_back(4);
+		v1.push_back(5);
+		print_Container(v1);
+
+		size_t x1 = 0;
+		std::cin >> x1;
+		auto p1 = std::find(v1.begin(), v1.end(), x1);
+		if (p1 != v1.end())
+		{
+			v1.insert(p1, 40);
+			*p1 *= 10;// 这里不论是否扩容，程序都会崩溃
+		}
+		print_Container(v1);
 	}
 }
