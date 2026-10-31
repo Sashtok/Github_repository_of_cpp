@@ -88,6 +88,7 @@ namespace Sashtok
 		{
 			if (_finish == _end_of_storage)
 			{
+				// 修正pos
 				size_t len = pos - _start;
 				reserve(capacity() == 0 ? 4 : 2 * capacity());
 				pos = _start + len;
@@ -238,8 +239,8 @@ namespace Sashtok
 		auto p = std::find(v.begin(), v.end(), x);
 		if (p != v.end())
 		{
-			v.insert(p, 40);
-			// 第二种迭代器失效
+			//v.insert(p, 40);
+			// 第二种迭代器失效：位置的意义变了
 			//*p *= 10;
 			// 1.本来想改变原来p位置的值，但是改变的却是新插入的值，因为原来的值已经挪走了
 			// 2.此外，如果insert进行了扩容，那么p指向的是原来的空间，这里解引用就是越界访问
@@ -253,9 +254,10 @@ namespace Sashtok
 			// 那么，改成void insert(const iterator& pos, const T& x)可以吗？
 			// 不行，改成这样，还怎么修正pos呢
 			// 总之，insert后，p就失效了，不要再直接访问p了
+			
 			// 在官方的STL中，vector的insert的解决方案是，返回新插入的值的迭代器
 			// iterator insert(iterator & pos, const T & x)
-			// 这样把p更新后，就可以访问了
+			p = v.insert(p, 40);// 这样把p更新后，就可以访问了
 			*(p + 1) *= 10;
 		}
 		print_vector(v); 
