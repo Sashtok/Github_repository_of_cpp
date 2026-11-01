@@ -2,6 +2,8 @@
 #include<iostream>
 #include<cassert>
 #include<vector>
+#include<string>
+#include<list>
 
 // 模板不能分离到两个文件
 namespace Sashtok
@@ -10,6 +12,99 @@ namespace Sashtok
 	class vector
 	{
 	public:
+		// 无参构造
+		//vector()
+		//{}
+		// cpp11后也可以写成这样
+		vector() = default;
+
+		// 拷贝构造
+		// 类内可以用类名替代类型，类外不行
+		vector(const vector<T>& v)// 写成vector(const vector& v)也行
+		{
+			reserve(v.size());
+			for (auto& x: v)
+			{
+				push_back(x);
+			}
+		}
+		
+		// 用迭代器范围构造
+		// 类模板的成员函数，也可以定义为函数模板
+		// 任意容器迭代器初始化，但要求类型是匹配的
+		// 如list<int>可以初始化vector<int>，但list<string>不能初始化vector<int>
+		template<class InputIterator>
+		vector(InputIterator begin, InputIterator end)
+		{
+			while (begin != end)
+			{
+				push_back(*begin);
+				begin++;
+			}
+		}
+
+		// n个val构造
+		vector(int n, const T& val = T())
+		{
+			reserve(n);
+			while (_finish != _start + n)
+			{
+				push_back(val);
+			}
+		}
+		vector(size_t n, const T& val = T())
+		{
+			reserve(n);
+			while (_finish != _start + n)
+			{
+				push_back(val);
+			}
+		}
+		vector(long long n, const T& val = T())
+		{
+			reserve(n);
+			while (_finish != _start + n)
+			{
+				push_back(val);
+			}
+		}
+
+		~vector()
+		{
+			delete[] _start;
+			_start = nullptr;
+			_finish = nullptr;
+			_end_of_storage = nullptr;
+		}
+		
+		// 传统写法
+		//void clear()
+		//{
+		//	_finish = _start;
+		//}
+		//vector<int> operator=(const vector<T>& v)
+		//{
+		//	clear();
+		//	reserve(v.size());
+		//	for (auto& x: v)
+		//	{
+		//		push_back(x);
+		//	}
+		//	return *this;
+		//}
+		// 现代写法
+		void swap(vector<T>& v)
+		{
+			std::swap(_start, v._start);
+			std::swap(_finish, v._finish);
+			std::swap(_end_of_storage, v._end_of_storage);
+		}
+		vector<T> operator=(vector<T> v)
+		{
+			swap(v);
+			return *this;
+		}
+
 		typedef T* iterator;
 		iterator begin()
 		{
@@ -35,7 +130,11 @@ namespace Sashtok
 			{
 				size_t old_size = size();
 				iterator temp = new T[n];
-				memcpy(temp, _start, old_size * sizeof(T));
+				//memcpy(temp, _start, old_size * sizeof(T));
+				for (int i = 0; i < size(); ++i)
+				{
+					temp[i] = _start[i];
+				}
 				delete[] _start;
 				_start = temp;
 				_finish = _start + old_size;
@@ -87,7 +186,7 @@ namespace Sashtok
 
 		iterator insert(iterator pos, const T& x)
 		{
-			assert(pos >= _start && pos <= _finish)
+			assert(pos >= _start && pos <= _finish);
 			if (_finish == _end_of_storage)
 			{
 				// 修正pos
@@ -124,7 +223,35 @@ namespace Sashtok
 		//	++_finish;
 		//}
 
-		erase();
+		iterator erase(iterator pos)
+		{
+			assert(pos >= _start && pos < _finish);
+			for (iterator i = pos + 1; i < _finish; ++i)
+			{
+				*(i - 1) = *i;
+			}
+			--_finish;
+			return pos;
+		}
+		// erase后就认为迭代器失效了，需要更新后才能继续使用
+		// vs依然会强制检查，erase后再访问迭代器就会报错，而gcc是不会检查的
+		// 几乎所有容器的erase后都会导致迭代器失效，但insert后是否失效是不一定的
+
+		void resize(size_t n, const T& val = T())// 写成void resize(size_t n, T val = T())也行
+		{
+			if (n <= size())
+			{
+				_finish = _start + n;
+			}
+			else
+			{
+				reserve(n);
+				while (_finish != _start + n)
+				{
+					push_back(val);
+				}
+			}
+		}
 	private:
 		iterator _start = nullptr;
 		iterator _finish = nullptr;
@@ -300,5 +427,114 @@ namespace Sashtok
 			*p1 *= 10;// 这里不论是否扩容，程序都会崩溃
 		}
 		print_Container(v1);
+	}
+
+	void test3()
+	{
+		vector<int> v;
+		v.push_back(2);
+		v.push_back(1);
+		v.push_back(2);
+		v.push_back(3);
+		v.push_back(4);
+		v.push_back(5);
+		v.push_back(4);
+		print_Container(v);
+		auto it = v.begin();
+		while (it != v.end())
+		{
+			if (*it % 2 == 0)
+			{
+				v.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
+		print_Container(v);
+	}
+
+	void test4()
+	{
+		vector<int> v;
+		v.push_back(1);
+		v.push_back(2);
+		v.push_back(3);
+		v.push_back(4);
+		v.push_back(5);
+		v.push_back(6);
+		v.push_back(7);
+		v.push_back(8);
+		v.push_back(9);
+		v.push_back(0);
+		print_Container(v);
+
+		v.reserve(20);
+		v.resize(5);
+		print_Container(v);
+		v.resize(15, 99);
+		print_Container(v);
+		v.resize(25, 88);
+		print_Container(v);
+	}
+
+	void test5()
+	{
+		// 为了兼容模板的缺省值，内置类型也有了构造函数、析构函数
+		int a = int();// 默认构造，默认初始化为0
+		int b = int(2);// 用匿名对象拷贝构造
+		int c(3);
+		int d(c);
+
+		vector<int> v1;
+		v1.push_back(1);
+		v1.push_back(2);
+		v1.push_back(3);
+		v1.push_back(4);
+		v1.push_back(5);
+		print_Container(v1);
+		vector<int> v2 = v1;
+		print_Container(v2);
+		vector<int> v3;
+		v3 = v2;
+		print_Container(v2);
+	}
+
+	void test6()
+	{
+		std::string s("hello");
+		vector<std::string> v1(4, s);
+		print_Container(v1);
+
+		std::list<int> l;
+		l.push_back(1);
+		l.push_back(2);
+		l.push_back(3);
+		l.push_back(4);
+		l.push_back(5);
+		vector<int> v2(++l.begin(), --l.end());
+		print_Container(v2);
+
+		vector<int> v3(10, 1);// 如果只写一个size_t n的n个val构造，那么这里会调用迭代器区间构造
+		// 首先编译器会调用最匹配的构造函数
+		// 因为整数10的类型默认是int，如果n的类型是size_t，而1的类型是int
+		// 那么编译器把10和1当成迭代器，调用迭代器区间构造，这样两个参数的类型都是最匹配的
+		// 如果想避免这种的情况，可以多写几个n个val构造的重载，让n的类型是int、size_t、long long等
+		print_Container(v3);
+	}
+
+	void test7()
+	{
+		vector<std::string> v(4, "hello");
+		print_Container(v);
+		v.push_back("hello");
+		print_Container(v);
+		// 这时push_back会扩容，而扩容时调用的reserve，在拷贝数据的时候用的是memcpy
+		// 这是浅拷贝，当拷贝完数据
+		// 新的空间里的每一个的string的_str都指向原来对应的string的_str所指向的空间
+		// 这时delete[]，原来的_str的空间被释放了，而新的string的_str还指向原来的空间
+		// 再调用_str就会出错
+		// 所以需要改变拷贝数据的方式
 	}
 }

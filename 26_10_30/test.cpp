@@ -4,7 +4,13 @@
 int main()
 {
 	//Sashtok::test1();
-	Sashtok::test2();
+	//Sashtok::test2();
+	//Sashtok::test3();
+	//Sashtok::test4();
+	//Sashtok::test5();
+	//Sashtok::test6();
+	Sashtok::test7();
+
 	return 0;
 }
 
