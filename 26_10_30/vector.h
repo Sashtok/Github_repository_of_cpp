@@ -84,11 +84,14 @@ namespace Sashtok
 		//}
 		//vector<int> operator=(const vector<T>& v)
 		//{
-		//	clear();
-		//	reserve(v.size());
-		//	for (auto& x: v)
-		//	{
-		//		push_back(x);
+		//	if (v != *this)
+		///	{
+		//		clear();
+		//		reserve(v.size());
+		//		for (auto& x : v)
+		//		{
+		//			push_back(x);
+		///		}
 		//	}
 		//	return *this;
 		//}
@@ -161,6 +164,7 @@ namespace Sashtok
 			++_finish;
 		}
 		
+		// operator[]和at都会进行边界检查，但前者是用assert，后者是抛异常
 		T& operator[](size_t pos)
 		{
 			assert(pos >= 0 && pos < size());

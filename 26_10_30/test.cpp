@@ -9,7 +9,7 @@ int main()
 	//Sashtok::test4();
 	//Sashtok::test5();
 	//Sashtok::test6();
-	Sashtok::test7();
+	//Sashtok::test7();
 
 	return 0;
 }
@@ -94,5 +94,48 @@ int main()
 //            }
 //        }
 //        return (int)res;
+//    }
+//};
+
+//class Solution
+//{
+//public:
+//    int removeDuplicates(vector<int>& nums)
+//    {
+//        auto it = nums.begin();
+//        while (it != nums.end())
+//        {
+//            auto cur = it + 1;
+//            while (cur != nums.end() && *cur == *it)
+//            {
+//                cur = nums.erase(cur);
+//            }
+//            it = cur;
+//        }
+//        return nums.size();
+//    }
+//};
+
+//class Solution
+//{
+//public:
+//    int MoreThanHalfNum_Solution(vector<int>& numbers)
+//    {
+//        for (int i = 0; i <= (numbers.size() / 2); ++i)
+//        {
+//            int count = 0;
+//            for (int j = 0; j < numbers.size(); ++j)
+//            {
+//                if (numbers[i] == numbers[j])
+//                {
+//                    count++;
+//                }
+//            }
+//            if (count > (numbers.size() / 2))
+//            {
+//                return numbers[i];
+//            }
+//        }
+//        return 0;
 //    }
 //};
