@@ -4,22 +4,54 @@
 
 namespace Sashtok
 {
-	// 节点list_node
+	template<class T>
+	struct list_node
+	{
+		T _data;
+		list_node<T>* _prev;
+		list_node<T>* _next;
 
-
-	class list
+		list_node();
+	};
+	
+	struct list_iterator
 	{
 
+		list_iterator();
+		operator*();
+		operator++();
+		operator!=();
+	};
+
+	template<class T>
+	class list
+	{
 	public:
-		list();
 
-		push_back();
+		begin();
+		end();
 
-		size();
+		list()
+		{
 
-		empty();
+		}
 
+		void push_back(T& x)
+		{
+
+		}
+
+		size_t size()
+		{
+			return _size;
+		}
+
+		bool empty()
+		{
+			return _size == 0;
+		}
 	private:
-			
+		list_node<T>* _head = nullptr;
+		size_t _size = 0;
 	};
 }
