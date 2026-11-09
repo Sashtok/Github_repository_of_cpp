@@ -34,6 +34,8 @@ namespace Sashtok
 		{
 			return _node->_data;
 		}
+		operator->();
+
 		Self& operator++()
 		{
 			_node = _node->_next;
@@ -45,7 +47,7 @@ namespace Sashtok
 			_node = _node->_next;
 			return temp;
 		}
-		Self operator--()
+		Self& operator--()
 		{
 			_node = _node->_prev;
 			return *this;
@@ -137,6 +139,37 @@ namespace Sashtok
 		size_t _size = 0;
 	};
 
+	struct A
+	{
+		int _a;
+		int _b;
+	};
+
+	template<class Container>
+	printContainer()
+	{
+		// const iterator：迭代器本身不能修改
+		// const_iterator：迭代器指向的内容不能修改
+		// 所以const_iterator不能用const iterator代替
+
+		// 按需实例化
+		//list<int>::const_iterator it = con.begin();
+		//while (it != con.end())
+		//{
+		//	*it *= 10;// 如果没有调用这个函数，那么编译时，这个错误是检查不出来的
+		//			  // 源自于这个函数模板未被调用
+		//	std::cout << *it << ' ';
+		//}
+		//std::cout << std::endl;
+
+		list<int>::const_iterator it = con.begin();
+		while (it != con.end())
+		{
+			std::cout << *it << ' ';
+		}
+		std::cout << std::endl;
+	}
+
 	void test1()
 	{
 		list<int> li;
@@ -160,6 +193,23 @@ namespace Sashtok
 			*it *= 2;
 			std::cout << *it << ' ';
 			it++;
+		}
+		std::cout << std::endl;
+
+		list<A> liA;
+		liA.push_back(A());
+		liA.push_back(A());
+		liA.push_back(A());
+		liA.push_back(A());
+		auto itA = liA.begin();
+		while (itA != liA.end())
+		{
+			// 可以用operator*，也可以重载->
+			//std::cout << (*itA)._a << ':' << (*itA)._b << std::endl;
+			std::cout << itA->_a << ':' << itA->_b << std::endl;
+			// 实际上是两个->，为了可读性，编译器特殊处理，省略了后面的->
+			//std::cout << itA.operator->()->_a << ':' << itA.operator->()->_b << std::endl;
+			++itA;
 		}
 		std::cout << std::endl;
 	}
