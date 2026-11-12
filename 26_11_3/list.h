@@ -2,6 +2,7 @@
 #include<iostream>
 #include<list>
 #include<cassert>
+#include<vector>
 
 namespace Sashtok
 {
@@ -83,7 +84,19 @@ namespace Sashtok
 		{
 			return _head;
 		}
+		begin()
+		{
 
+		}
+		end()
+		{
+
+		}
+
+		empty_init()
+		{
+
+		}
 		list()
 		{
 			_head = new list_node<T>;
@@ -91,7 +104,23 @@ namespace Sashtok
 			_head->_prev = _head;
 			_size = 0;
 		}
+		list()
+		{
 
+		}
+		list()
+		{
+
+		}
+
+		swap()
+		{
+
+		}
+		operator=()
+		{
+
+		}
 
 		void insert(iterator pos, const T& x)
 		{
@@ -133,7 +162,14 @@ namespace Sashtok
 			return _size == 0;
 		}
 
-		
+		clear()
+		{
+
+		}
+		~list()
+		{
+
+		}
 	private:
 		list_node<T>* _head = nullptr;
 		size_t _size = 0;
@@ -212,5 +248,33 @@ namespace Sashtok
 			++itA;
 		}
 		std::cout << std::endl;
+	}
+
+	test2()
+	{
+		// insert后迭代器不失效
+		// rease后失效
+	}
+
+	void func(std::list<int> li)
+	{}
+
+	test4()
+	{
+		// cpp11后，支持用初始化列表构造（不是写构造函数时的初始化列表）
+		// std::initializer_list是标准库中的一个类模板
+		std::initializer_list<int> il({ 1,2,3,4,5 });
+		// 这个类会开一块连续的数组，类中有两个指针，一个指向开始位置，一个指向结束位置
+		// 官方的list，vector等可以用初始化列表构造
+		std::list<int> li1({ 1,2,3,4,5 });
+		std::list<int> li2(il);
+		std::vector<int> v({ 1,2,3,4,5 });
+		// 自己的list想实现，需要自己实现一个用初始化列表初始化的构造函数
+		const std::list<int>& li3 = { 1,2,3,4,5 };// 隐式类型转换
+
+		// 有了这个，函数传参会方便一些
+		func(li1);
+		func({ 1,2,3,4,5 });// 隐式类型转换
+		// 这个用法实际上是抄的python
 	}
 }
