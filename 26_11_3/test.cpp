@@ -40,6 +40,9 @@
 
 int main()
 {
-	Sashtok::test1();
+	//Sashtok::test1();
+	//Sashtok::test2();
+	//Sashtok::test3();
+	Sashtok::test4();
 	return 0;
 }

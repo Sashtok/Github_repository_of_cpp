@@ -22,7 +22,7 @@ namespace Sashtok
 	
 	// 如果直接用list_node*作为迭代器，那*是list_node而不是T，++是与之相临的下一个地址，而不是next
 	// 所以要单独封装一个类作为迭代器，再利用运算符重载实现迭代器的功能
-	template<class T>
+	/*template<class T>
 	struct list_iterator
 	{
 		typedef list_iterator<T> Self;
@@ -31,11 +31,68 @@ namespace Sashtok
 		list_iterator(list_node<T>* other)
 			: _node(other)
 		{}
-		T& operator*() const
+		T& operator*()
 		{
 			return _node->_data;
 		}
-		operator->();
+		T* operator->()
+		{
+			return &(_node->_data);
+		}
+
+		Self& operator++()
+		{
+			_node = _node->_next;
+			return *this;
+		}
+		Self operator++(int)
+		{
+			Self temp = *this;
+			_node = _node->_next;
+			return temp;
+		}
+		Self& operator--()
+		{
+			_node = _node->_prev;
+			return *this;
+		}
+		Self operator--(int)
+		{
+			Self temp = *this;
+			_node = _node->_prev;
+			return temp;
+		}
+
+		bool operator!=(const Self& it) const
+		{
+			return _node != it._node;
+		}
+		bool operator==(const Self& it) const
+		{
+			return _node == it._node;
+		}
+	};*/
+
+	// 如果要实现const_iterator，可以单独再写一个list_const_iterator类
+	// 但官方是多加了两个模板参数来实现的，实际上和写两个类没什么不同
+	// 只是把实例化的工作交给编译器完成
+	template<class T, class Ref, class Ptr>
+	struct list_iterator
+	{
+		typedef list_iterator<T, Ref, Ptr> Self;
+		list_node<T>* _node;
+
+		list_iterator(list_node<T>* other)
+			: _node(other)
+		{}
+		Ref operator*()
+		{
+			return _node->_data;
+		}
+		Ptr operator->()
+		{
+			return &(_node->_data);
+		}
 
 		Self& operator++()
 		{
@@ -75,7 +132,8 @@ namespace Sashtok
 	{
 	public:
 		// typedef也受访问限定符的限制
-		typedef list_iterator<T> iterator;
+		typedef list_iterator<T, T&, T*> iterator;
+		typedef list_iterator<T, const T&, const T*> const_iterator;
 		iterator begin()
 		{
 			return _head->_next;
@@ -84,20 +142,16 @@ namespace Sashtok
 		{
 			return _head;
 		}
-		begin()
+		const_iterator begin() const
 		{
-
+			return _head->_next;
 		}
-		end()
+		const_iterator end() const
 		{
-
+			return _head;
 		}
 
-		empty_init()
-		{
-
-		}
-		list()
+		void empty_init()
 		{
 			_head = new list_node<T>;
 			_head->_next = _head;
@@ -106,23 +160,37 @@ namespace Sashtok
 		}
 		list()
 		{
-
+			empty_init();
 		}
-		list()
+		list(const list<T>& li)
 		{
-
+			empty_init();
+			for (auto& e : li)
+			{
+				push_back(e);
+			}
 		}
-
-		swap()
+		list(std::initializer_list<T> il)
 		{
-
+			empty_init();
+			for (auto& e : il)
+			{
+				push_back(e);
+			}
 		}
-		operator=()
+
+		void swap(list<T>& li)
 		{
-
+			std::swap(_head, li._head);
+			std::swap(_size, li._size);
+		}
+		list<T>& operator=(list<T> li)
+		{
+			swap(li);
+			return *this;
 		}
 
-		void insert(iterator pos, const T& x)
+		iterator insert(iterator pos, const T& x)
 		{
 			list_node<T>* newNode = new list_node<T>(x);
 			newNode->_prev = pos._node->_prev;
@@ -130,6 +198,7 @@ namespace Sashtok
 			pos._node->_prev->_next = newNode;
 			pos._node->_prev = newNode;
 			++_size;
+			return pos._node->_prev;
 		}
 		void push_back(const T& x)
 		{
@@ -139,13 +208,15 @@ namespace Sashtok
 		{
 			insert(begin(), x);
 		}
-		void erase(iterator pos)
+		iterator erase(iterator pos)
 		{
 			assert(pos != end());
+			list_node<T>* re = pos._node->_next;
 			pos._node->_prev->_next = pos._node->_next;
 			pos._node->_next->_prev = pos._node->_prev;
 			delete pos._node;
 			--_size;
+			return re;
 		}
 		void pop_back()
 		{
@@ -162,13 +233,20 @@ namespace Sashtok
 			return _size == 0;
 		}
 
-		clear()
+		void clear()
 		{
-
+			auto it = begin();
+			while (it != end())
+			{
+				it = erase(it);
+			}
 		}
 		~list()
 		{
-
+			clear();
+			delete _head;
+			_head = nullptr;
+			_size = 0;
 		}
 	private:
 		list_node<T>* _head = nullptr;
@@ -182,7 +260,7 @@ namespace Sashtok
 	};
 
 	template<class Container>
-	printContainer()
+	void printContainer(const Container& con)
 	{
 		// const iterator：迭代器本身不能修改
 		// const_iterator：迭代器指向的内容不能修改
@@ -198,10 +276,12 @@ namespace Sashtok
 		//}
 		//std::cout << std::endl;
 
-		list<int>::const_iterator it = con.begin();
+		typename Container::const_iterator it = con.begin();
+		//auto it = con.begin();
 		while (it != con.end())
 		{
 			std::cout << *it << ' ';
+			++it;
 		}
 		std::cout << std::endl;
 	}
@@ -250,27 +330,68 @@ namespace Sashtok
 		std::cout << std::endl;
 	}
 
-	test2()
+	void test2()
 	{
 		// insert后迭代器不失效
-		// rease后失效
+		// erase后失效
+		list<int> li;
+		li.push_back(1);
+		li.push_back(2);
+		li.push_back(3);
+		li.push_back(4);
+		li.push_back(5);
+		li.push_back(6);
+		printContainer(li);
+		auto it = li.begin();
+		while (it != li.end())
+		{
+			if (*it % 2 == 0)
+			{
+				it = li.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
+		printContainer(li);
+	}
+
+	void test3()
+	{
+		list<int> li1;
+		li1.push_back(1);
+		li1.push_back(2);
+		li1.push_back(3);
+		li1.push_back(4);
+		printContainer(li1);
+		list<int> li2 = li1;
+		printContainer(li2);
+		list<int> li3;
+		li3 = li1;
+		printContainer(li3);
 	}
 
 	void func(std::list<int> li)
 	{}
 
-	test4()
+	void test4()
 	{
 		// cpp11后，支持用初始化列表构造（不是写构造函数时的初始化列表）
 		// std::initializer_list是标准库中的一个类模板
 		std::initializer_list<int> il({ 1,2,3,4,5 });
+		printContainer(il);
 		// 这个类会开一块连续的数组，类中有两个指针，一个指向开始位置，一个指向结束位置
 		// 官方的list，vector等可以用初始化列表构造
 		std::list<int> li1({ 1,2,3,4,5 });
+		printContainer(li1);
 		std::list<int> li2(il);
+		printContainer(li2);
 		std::vector<int> v({ 1,2,3,4,5 });
+		printContainer(v);
 		// 自己的list想实现，需要自己实现一个用初始化列表初始化的构造函数
 		const std::list<int>& li3 = { 1,2,3,4,5 };// 隐式类型转换
+		printContainer(li3);
 
 		// 有了这个，函数传参会方便一些
 		func(li1);
