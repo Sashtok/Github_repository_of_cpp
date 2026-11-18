@@ -1,5 +1,35 @@
 #define _CRT_SECURE_NO_WARNINGS 1
+#include<iostream>
+#include<list>
+#include<vector>
+#include<stack>
+#include<queue>
+
 #include"stack.h"
+#include"queue.h"
+
+//int main()
+//{
+//	Sashtok::stack<int> st;
+//	//Sashtok::stack<int, std::vector<int>> st;
+//	st.push(1);
+//	st.push(2);
+//	st.push(3);
+//	st.push(4);
+//	st.pop();
+//	std::cout << st.top() << ' ' << st.size() << std::endl;
+//
+//	Sashtok::queue<int> q;
+//	//Sashtok::queue<int, std::list<int>> q;
+//	q.push(1);
+//	q.push(2);
+//	q.push(3);
+//	q.push(4);
+//	q.pop();
+//	std::cout << q.front() << ' ' << q.back() << ' ' << q.size() << std::endl;
+//
+//	return 0;
+//}
 
 int main()
 {
