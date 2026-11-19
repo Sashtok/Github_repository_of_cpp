@@ -33,30 +33,92 @@
 
 #include"priority_queue.h"
 
+//int main()
+//{
+//	std::priority_queue<int, std::vector<int>, std::greater<int>> p;
+//	p.push(1);
+//	p.push(2);
+//	p.push(3);
+//	p.push(4);
+//
+//	Sashtok::priority_queue<int, std::vector<int>, greater<int>> pq;
+//	pq.push(1);
+//	pq.push(2);
+//	pq.push(3);
+//	pq.push(4);
+//	pq.push(5);
+//	pq.push(6);
+//
+//	std::cout << pq.top() << ' ' << pq.size() << std::endl;
+//	
+//	pq.pop();
+//	pq.pop();
+//	pq.pop();
+//	pq.pop();
+//	pq.pop();
+//	pq.pop();
+//
+//	return 0;
+//}
+
+class A
+{
+	friend std::ostream& operator<<(std::ostream& os, const A& a);
+public:
+	A(int x = 0)
+		: _a(x)
+	{}
+	bool operator<(const A& other) const
+	{
+		return _a < other._a;
+	}
+	bool operator>(const A& other) const
+	{
+		return _a > other._a;
+	}
+private:
+	int _a;
+};
+std::ostream& operator<<(std::ostream& os, const A& a)
+{
+	os << a._a;
+	return os;
+}
+
+class Aless
+{
+public:
+	bool operator()(A* p1, A* p2)
+	{
+		return *p1 < *p2;
+	}
+};
+
 int main()
 {
-	std::priority_queue<int, std::vector<int>, std::greater<int>> p;
-	p.push(1);
-	p.push(2);
-	p.push(3);
-	p.push(4);
+	// 自己写仿函数
+	// 1.类类型不支持比较大小
+	// 2.支持比较大小，但是比较的逻辑不是我们想要的
+	std::priority_queue<A> pq1;// A类自己重载了<、>运算符
+	pq1.push(A(1));
+	pq1.push(A(2));
+	pq1.push(A(3));
+	pq1.push(A(4));
 
-	Sashtok::priority_queue<int, std::vector<int>, greater<int>> pq;
-	pq.push(1);
-	pq.push(2);
-	pq.push(3);
-	pq.push(4);
-	pq.push(5);
-	pq.push(6);
-
-	std::cout << pq.top() << ' ' << pq.size() << std::endl;
-	
-	pq.pop();
-	pq.pop();
-	pq.pop();
-	pq.pop();
-	pq.pop();
-	pq.pop();
+	//std::priority_queue<A*> pq2;// 这里是按地址比较的，但是new的地址是随机的,所以结果也是随机的
+	std::priority_queue<A*, std::vector<A*>, Aless> pq2;// 这里用自己写的Aless就可以解决
+	pq2.push(new A(1));
+	pq2.push(new A(2));
+	pq2.push(new A(3));
+	pq2.push(new A(4));
+	std::cout << *pq2.top() << std::endl;
+	pq2.pop();
+	std::cout << *pq2.top() << std::endl;
+	pq2.pop();
+	std::cout << *pq2.top() << std::endl;
+	pq2.pop();
+	std::cout << *pq2.top() << std::endl;
+	pq2.pop();
 
 	return 0;
 }
