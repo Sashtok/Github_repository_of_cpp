@@ -31,8 +31,32 @@
 //	return 0;
 //}
 
+#include"priority_queue.h"
+
 int main()
 {
+	std::priority_queue<int, std::vector<int>, std::greater<int>> p;
+	p.push(1);
+	p.push(2);
+	p.push(3);
+	p.push(4);
+
+	Sashtok::priority_queue<int, std::vector<int>, greater<int>> pq;
+	pq.push(1);
+	pq.push(2);
+	pq.push(3);
+	pq.push(4);
+	pq.push(5);
+	pq.push(6);
+
+	std::cout << pq.top() << ' ' << pq.size() << std::endl;
+	
+	pq.pop();
+	pq.pop();
+	pq.pop();
+	pq.pop();
+	pq.pop();
+	pq.pop();
 
 	return 0;
 }

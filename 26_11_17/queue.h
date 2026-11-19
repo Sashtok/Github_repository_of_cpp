@@ -3,7 +3,7 @@
 
 namespace Sashtok
 {
-	template<class T, class Container = std::deque<int>>
+	template<class T, class Container = std::deque<T>>
 	class queue
 	{
 	public:

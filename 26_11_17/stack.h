@@ -4,7 +4,7 @@
 namespace Sashtok
 {
 	// Container适配转换出stack
-	template<class T, class Container = std::deque<int>>
+	template<class T, class Container = std::deque<T>>
 	class stack
 	{
 	public:
