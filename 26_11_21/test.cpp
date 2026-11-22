@@ -68,12 +68,17 @@ public:
 };
 
 template<class T1, class T2>
-class A<T1*, T2&>
+class A<T1*, T2&>// 假设传的是<int*, int&>，那么T1是int而不是int*，T2是int而不是int&
 {
 public:
 	A()
 	{
 		std::cout << "A(T1*, T2&)" << std::endl;
+		//int a;
+		//T1* p = &a;
+		//T2& r = a;
+		//T1 b；
+		// 这样设计既可以得到int，又可以得到int*，更灵活
 	}
 };
 
@@ -89,7 +94,7 @@ int main()
 
 	A<int*, char*> a6;
 	A<int&, char&> a7;
-	A<int*, char&> a8;
+	A<int*, int&> a8;
 
 	return 0;
 }
