@@ -127,6 +127,7 @@
 //}
 
 
+
 //int main()
 //{
 //	// 黑盒测试：不了解底层实现，从功能角度测试
@@ -135,6 +136,7 @@
 //
 //	return 0;
 //}
+
 
 
 //class A
@@ -184,41 +186,147 @@
 //}
 
 
-class A
-{
-public:
-	virtual void func(int val = 1) { std::cout << "A->" << val << std::endl; }
 
-	virtual void test() { func(); }
-};
+//class A
+//{
+//public:
+//	virtual void func(int val = 1) { std::cout << "A->" << val << std::endl; }
+//
+//	virtual void test() { func(); }
+//};
+//
+//class B : public A
+//{
+//public:
+//	void func(int val = 0) { std::cout << "B->" << val << std::endl; }
+//};
+//
+//int main()
+//{
+//	B* p = new B;
+//	p->test();
+//	// 这里调用test，由于B没有覆盖test，所以p->test()最终调用继承来的A::test
+//	// 进入A::test后，this的静态类型是A*，但实际指向B对象。
+//	// virtual void test(A* this)
+//	// A中func是虚函数，B也对func完成的重写，这是由基类的指针调用虚函数
+//	// 所以满足运行时多态的条件
+//	// 运行时多态调用时，重写的函数可以看成由被重写的函数的声明和重写函数的实现组成
+//	// virtual void func(int val = 1) { std::cout << "B->" << val << std::endl; }
+//	// 这也是重写虚函数可以不写virtual的原因
+//	// 调用表达式先根据静态类型可见的声明确定默认实参，再动态分派到最终覆盖函数的函数体。
+//	// 在A::test中，func()调用点可见的是A::func(int val = 1)，所以默认实参是 1
+//	// 但函数体动态分派到B::func，所以输出B->1。
+//	// 所以虽然调用的是B类的func，但是缺省值是A的
+//	// 结果是B->1
+//
+//	p->func();
+//	// 如果是直接调用func，就不构成多态了，调用的就是B类里原本的func
+//	// 结果是B->0
+//
+//	return 0;
+//}
 
-class B : public A
-{
-public:
-	void func(int val = 0) { std::cout << "B->" << val << std::endl; }
-};
+
+
+//class A
+//{
+//public:
+//	virtual ~A()
+//	{
+//		std::cout << "~A()" << std::endl;
+//	}
+//};
+//
+//class B : public A
+//{
+//public:
+//	virtual ~B()
+//	{
+//		std::cout << "~B()" << std::endl;
+//		delete _b;
+//	}
+//protected:
+//	int* _b = new int;
+//};
+//
+//int main()
+//{
+//	A* a = new A;
+//	A* b = new B;
+//	delete a;
+//	delete b;
+//	// 父类的指针可能指向的子类的对象
+//	// A类和B类的析构函数名不同，本来不构成多态
+//	// 但如果这里不构成多态，析构b时调用的就是A类的析构函数
+//	// 可能导致b的变量未释放，造成内存泄漏
+//	// 所以编译器把所有析构函数名都特殊处理成destructor，使其可以构成多态
+//	// 这也是基类的析构函数建议设计成虚函数的原因
+//
+//	return 0;
+//}
+
+
+
+//class A
+//{
+//public:
+//	virtual void print()
+//	{
+//		std::cout << "class A" << std::endl;
+//	}
+//protected:
+//	int _a;
+//};
+//
+//class B1 : public A
+//{
+//public:
+//	virtual void print()
+//	{
+//		std::cout << "class B1" << std::endl;
+//	}
+//protected:
+//	int _b1;
+//};
+//
+//class B2 : public A
+//{
+//public:
+//	virtual void print()
+//	{
+//		std::cout << "class B2" << std::endl;
+//	}
+//protected:
+//	int _b2;
+//};
+//
+//void func(A* a)
+//{
+//	// 多态的原理：满足多态时，运行时，到指向的对象的虚函数表中找到对应的虚函数地址，进行调用
+//	a->print();
+//}
+//
+//int main()
+//{
+//	// 类中有虚函数时，类的大小会变大，因为成员变量会多一个虚函数表指针
+//	// 虚函数表指针指向虚表
+//	// 虚表是虚函数表，也就是一个函数指针数组
+//
+//	A a;
+//	B1 b1;
+//	B2 b2;
+//	func(&a);
+//	func(&b1);
+//	func(&b2);
+//
+//	return 0;
+//}
+
+
 
 int main()
 {
-	B* p = new B;
-	p->test();
-	// 这里调用test，由于B没有覆盖test，所以p->test()最终调用继承来的A::test
-	// 进入A::test后，this的静态类型是A*，但实际指向B对象。
-	// virtual void test(A* this)
-	// A中func是虚函数，B也对func完成的重写，这是由基类的指针调用虚函数
-	// 所以满足运行时多态的条件
-	// 运行时多态调用时，重写的函数可以看成由被重写的函数的声明和重写函数的实现组成
-	// virtual void func(int val = 1) { std::cout << "B->" << val << std::endl; }
-	// 这也是重写虚函数可以不写virtual的原因
-	// 调用表达式先根据静态类型可见的声明确定默认实参，再动态分派到最终覆盖函数的函数体。
-	// 在A::test中，func()调用点可见的是A::func(int val = 1)，所以默认实参是 1
-	// 但函数体动态分派到B::func，所以输出B->1。
-	// 所以虽然调用的是B类的func，但是缺省值是A的
-	// 结果是B->1
-
-	p->func();
-	// 如果是直接调用func，就不构成多态了，调用的就是B类里原本的func
-	// 结果是B->0
+	// 同类型对象虚表共用，不同类型对象虚表各自独立
 
 	return 0;
 }
