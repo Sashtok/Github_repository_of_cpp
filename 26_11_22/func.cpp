@@ -9,8 +9,8 @@
 //}
 
 // 显示实例化
-//template
-//void func1(const int& x);
+template
+void func1(const int& x);
 
 // 定义
 void func2(const int& x)
